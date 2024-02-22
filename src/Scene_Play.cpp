@@ -254,9 +254,21 @@ void Scene_Play::spawnPlayer() {
   m_player = m_entityManager.addEntity("player");
   m_player->addComponent<CAnimation>(m_game->getAssets().get_animation("Stand"), true);
   m_player->addComponent<CTransform>(gridToMidPixel(m_playerConfig.X, m_playerConfig.Y, m_player), Vec2(m_playerConfig.SPEED, 1), Vec2(1,1), 0);
-  m_player->addComponent<CBounding_box>(Vec2(m_playerConfig.CX, m_playerConfig.CY));
+  auto & p_animation = m_player->getComponent<CAnimation>();
+
+  Vec2 scale((float) 64 / p_animation.animation.getSize().x, (float) 64 / p_animation.animation.getSize().y);
+
+  p_animation.animation.setScale(scale.x, scale.y);
+
+
+  m_player->addComponent<CBounding_box>(Vec2(32 * scale.x, 32 * scale.y));
   m_player->addComponent<CGravity>(m_playerConfig.GRAVITY);
   m_player->addComponent<CState>("standing", "right");
+
+  auto & p_transform = m_player->getComponent<CTransform>();
+
+  p_transform.scale = scale;
+
   m_player->addComponent<CInput>();
   std::cout << "playerSpawned" << std::endl;
 
