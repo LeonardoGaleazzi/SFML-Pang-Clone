@@ -1,4 +1,4 @@
-Texture		TexStand	images/pang/playerstand.png
+Texture		TexStand	images/pang/playerstill.png
 Texture		TexRun		images/pang/playerwalk.png
 Texture		TexAir		images/megaman/air64.png
 Texture		TexBuster	images/megaman/buster.png
@@ -22,7 +22,7 @@ Texture 	TexFlag		images/mario/flag.png
 Texture		TexGoomba	images/mario/goomba_walk.png
 Texture		TexGoomSquash	images/mario/goomba_squash.png
 Texture         TexBackground   images/pang/BgRoom1.png
-Animation 	Stand		TexStand	1	0
+Animation 	Stand		TexStand	2	20
 Animation 	Run		TexRun		5	10
 Animation 	Air		TexAir		1	0
 Animation 	Buster		TexBuster	1	0

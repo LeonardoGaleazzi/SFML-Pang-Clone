@@ -258,7 +258,7 @@ void Scene_Play::spawnPlayer() {
 
   Vec2 scale((float) 64 / p_animation.animation.getSize().x, (float) 64 / p_animation.animation.getSize().y);
 
-  p_animation.animation.setScale(scale.x, scale.y);
+  //p_animation.animation.setScale(scale.x, scale.y);
 
 
   m_player->addComponent<CBounding_box>(Vec2(32 * scale.x, 32 * scale.y));
@@ -420,7 +420,7 @@ void Scene_Play::sCollision() {
   // TODO: Check to see if the player has fallen doen a hole (y > height())
   // TODO: Don't let the player walk off the left side of the map  
   auto& p_state = m_player->getComponent<CState>();
-  //std::cout << "Player Direction: " << p_state.direction << std::endl;
+  //std::cout << "Player State: " << p_state.state << std::endl;
 
   bool is_there_a_bottom = checkBottom();
   //std::cout << is_there_a_bottom << std::endl;
@@ -644,6 +644,7 @@ void Scene_Play::sAnimation() {
         spawnCoin(e);
       }
 
+      
       if(e_animation.repeat)
       {
         e_animation.animation.update();
@@ -683,7 +684,7 @@ void Scene_Play::sAnimation() {
   if(p_state.state == "jumping" || p_state.state == "falling")
   {
     m_player->addComponent<CAnimation>(m_game->getAssets().get_animation("Air"), true);
-  }else if(p_state.state == "standing")
+  }else if(p_state.state == "standing" && p_animation.animation.getName() != "Stand")
   {
         m_player->addComponent<CAnimation>(m_game->getAssets().get_animation("Stand"), true);
       }else if(p_state.state == "running" && p_animation.animation.getName() != "Run")

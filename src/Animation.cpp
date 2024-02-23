@@ -26,19 +26,19 @@ void Animation::update() {
   {
     size_t animation_frame = (m_currentFrame / m_speed) % m_frameCount;
 
-    //if(m_name == "Run") std::cout << "Animation Frame: " << animation_frame << std::endl;
+    //if(m_name == "Stand") std::cout << "Animation Frame: " << animation_frame << std::endl;
 
-   //if(m_name == "Question") std::cout << "m_currentFrame: " << m_currentFrame << std::endl;
-
-
-    //if(m_name == "Question") std::cout << "m_speed: " << m_speed << std::endl;
+   //if(m_name == "Stand") std::cout << "m_currentFrame: " << m_currentFrame << std::endl;
 
 
-    //if(m_name == "Question") std::cout << "m_frameCount: " << m_frameCount << std::endl;
+   // if(m_name == "Stand") std::cout << "m_speed: " << m_speed << std::endl;
+
+
+    //if(m_name == "Stand") std::cout << "m_frameCount: " << m_frameCount << std::endl;
 
     //if(m_name == "Question") std::cout << "Before Scale: " << "(" << m_sprite.getScale().x << "," << m_sprite.getScale().y << ")" << std::endl;
 
-    
+    std::cout << "Rect: [" << animation_frame * m_size.x << "," << 0 << "," << m_size.x << "," << m_size.y << "]" << std::endl;
 
     m_sprite.setTextureRect(sf::IntRect(animation_frame * m_size.x, 0, m_size.x, m_size.y));
 
