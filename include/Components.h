@@ -86,6 +86,7 @@ class CState : public Component
 public:
 	std::string state= "jumping";
 	std::string direction = "right";
+	bool 		firing = false;
 	
 	CState() {}
 	CState(const std::string &s, const std::string &d) : state(s), direction(d) {}

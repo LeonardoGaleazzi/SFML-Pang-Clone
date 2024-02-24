@@ -22,6 +22,8 @@ Texture 	TexFlag		images/mario/flag.png
 Texture		TexGoomba	images/mario/goomba_walk.png
 Texture		TexGoomSquash	images/mario/goomba_squash.png
 Texture         TexBackground   images/pang/BgRoom1.png
+Texture         TexBulletHead   images/pang/BulletHead.png
+Texture         TexChain           images/pang/Chain.png
 Animation 	Stand		TexStand	2	20
 Animation 	Run		TexRun		5	10
 Animation 	Air		TexAir		1	0
@@ -46,6 +48,8 @@ Animation 	PoleTop		TexPoleTop	1	0
 Animation	Goomba		TexGoomba	4	10
 Animation	GoombaSquash	TexGoomSquash	1	10
 Animation       Background      TexBackground   1       0
+Animation       BulletHead      TexBulletHead   1       0
+Animation       Chain           TexChain        1       0
 Font		Arial		fonts/arial.ttf
 Font 		Mario 		fonts/mario.ttf
 Font 		Megaman 	fonts/megaman.ttf

@@ -20,7 +20,7 @@ void Scene_Play::init(const std::string &levelPath) {
   registerAction(sf::Keyboard::A, "LEFT");
   registerAction(sf::Keyboard::W, "JUMP");
   registerAction(sf::Keyboard::D, "RIGHT");
-  registerAction(sf::Keyboard::Space, "FIRE");
+  registerAction(sf::Keyboard::R, "FIRE");
   //  TODO: Register all other gameplay Actions
 
   m_gridText.setCharacterSize(12);
@@ -120,6 +120,7 @@ void Scene_Play::loadLevel(const std::string &filename) {
           tileEntity->addComponent<CBounding_box>(b_animation.animation.getSize());
           tileEntity->addComponent<CState>("normal", "right");
 
+
 		    }else if (entityTag == "Dec")
 		    {
 
@@ -182,7 +183,6 @@ void Scene_Play::loadLevel(const std::string &filename) {
 
 
           spawnPlayer();
-
 
 		    }
 		else
@@ -279,12 +279,14 @@ void Scene_Play::spawnBullet(const std::shared_ptr<Entity> entity) {
                                                    
   // TODO: this should spawn a bullet at the given entity, going in the
   // direction the entity is facing
-
   auto e = m_entityManager.addEntity("bullet");
   auto& p_state = m_player->getComponent<CState>();
-  e->addComponent<CAnimation>(m_game->getAssets().get_animation("Buster"), true);
-  e->addComponent<CTransform>(entity->getComponent<CTransform>().position, Vec2(5 * (p_state.direction == "right" ? 1 : -1), 0), Vec2(1,1), 0);
-  e->addComponent<CBounding_box>(e->getComponent<CAnimation>().animation.getSize());
+  auto& p_transform = entity->getComponent<CTransform>();
+  auto& p_bounding_box = entity->getComponent<CBounding_box>();
+  
+  e->addComponent<CAnimation>(m_game->getAssets().get_animation("BulletHead"), true);
+  e->addComponent<CTransform>(Vec2(p_transform.position.x, p_transform.position.y - p_bounding_box.half_size.y - m_gridSize.y), Vec2(0,0), Vec2(1,1), 0);
+  //e->addComponent<CBounding_box>(e->getComponent<CAnimation>().animation.getSize());
   
 }
 
