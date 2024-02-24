@@ -938,6 +938,7 @@ void Scene_Play::spawnChain(std::shared_ptr<Entity> bulletHead)
   chain_entity->addComponent<CAnimation>(m_game->getAssets().get_animation("Chain"), true);
   h_transform.position = Vec2(h_transform.position.x, h_transform.position.y - m_gridSize.y);
   chain_entity->addComponent<CTransform>(Vec2(h_transform.position.x, h_transform.position.y + h_bounding_box.half_size.y + 8));
+  chain_entity->addComponent<CBounding_box>(chain_entity->getComponent<CAnimation>().animation.getSize());
   //p_state.firing = false;
 }
 
