@@ -176,7 +176,33 @@ void Scene_Play::loadLevel(const std::string &filename) {
 
           //b_animation.animation.getSprite().setScale(2,2);
 
-		    }else if (entityTag == "Player")
+		    }else if (entityTag == "Ball")
+        {
+          std::string animationName;
+          float x, y;
+			    
+			    file >> animationName >> x >> y;
+			    auto tileEntity = m_entityManager.addEntity(entityTag);
+          std::cout << "animationName: " << animationName << " " << "x: " << x << " " << "y: " << y << std::endl;
+          std::cout << "log" << std::endl;
+          tileEntity->addComponent<CAnimation>(m_game->getAssets().get_animation(animationName), true);
+
+          auto & b_animation = tileEntity->getComponent<CAnimation>();
+          print("Ballsize: ", std::to_string(b_animation.animation.getSize().x), std::to_string(b_animation.animation.getSize().y));
+          //Vec2 scale(m_gridSize.x / b_animation.animation.getSize().x, m_gridSize.y / b_animation.animation.getSize().y);
+          Vec2 scale(2,2);
+
+          b_animation.animation.setScale(scale.x, scale.y);
+
+          tileEntity->addComponent<CTransform>(gridToMidPixel(x, y, tileEntity));
+
+          auto & b_transform = tileEntity->getComponent<CTransform>();
+
+          b_transform.scale = scale;
+
+          tileEntity->addComponent<CBounding_box>(b_animation.animation.getSize());
+          tileEntity->addComponent<CState>("normal", "right");
+        }else if (entityTag == "Player")
 		    {
 
           file >> m_playerConfig.X >> m_playerConfig.Y >> m_playerConfig.CX >> m_playerConfig.CY >> m_playerConfig.SPEED >> m_playerConfig.JUMP >> m_playerConfig.MAXSPEED >> m_playerConfig.GRAVITY >> m_playerConfig.WEAPON;
@@ -300,10 +326,9 @@ void Scene_Play::spawnBullet(const std::shared_ptr<Entity> entity) {
 }
 
 void Scene_Play::spawnEnemy() {
-  // TODO(due: Friday): implement all the spawn enemy stuff
-  // outh use the goomba animation and be added as Tile entity
-  // see the current implementation of how the goomba is built
-  // form the loadLevel method
+  auto ball = m_entityManager.addEntity("ball");
+  ball->addComponent<CAnimation>(m_game->getAssets().get_animation("Ball"), true);
+  ball->addComponent<CTransform>(gridToMidPixel(1,1,ball));
 }
 
 void Scene_Play::sMovement() {

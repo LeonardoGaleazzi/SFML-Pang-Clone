@@ -24,6 +24,7 @@ Texture		TexGoomSquash	images/mario/goomba_squash.png
 Texture         TexBackground   images/pang/BgRoom1.png
 Texture         TexBulletHead   images/pang/BulletHeadSmall.png
 Texture         TexChain        images/pang/ChainSmall.png
+Texture         TexBall        images/pang/ballSquared.png
 Animation 	Stand		TexStand	2	20
 Animation 	Run		TexRun		5	10
 Animation 	Air		TexAir		1	0
@@ -50,6 +51,7 @@ Animation	GoombaSquash	TexGoomSquash	1	10
 Animation       Background      TexBackground   1       0
 Animation       BulletHead      TexBulletHead   1       0
 Animation       Chain           TexChain        1       0
+Animation       Ball            TexBall         1       0
 Font		Arial		fonts/arial.ttf
 Font 		Mario 		fonts/mario.ttf
 Font 		Megaman 	fonts/megaman.ttf

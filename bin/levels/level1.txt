@@ -251,4 +251,5 @@ Tile Ground  79 43
 Tile Ground  79 44
 Tile Ground  79 45
 Tile Ground  79 46
+Ball Ball    10 10
 Player 23 1 48 48 5 -20 20 0.75 Buster
