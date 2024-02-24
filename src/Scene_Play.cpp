@@ -279,14 +279,23 @@ void Scene_Play::spawnBullet(const std::shared_ptr<Entity> entity) {
                                                    
   // TODO: this should spawn a bullet at the given entity, going in the
   // direction the entity is facing
+  auto& bullet = m_entityManager.getEntities("bullet");
+
+  if(!bullet.empty())
+  {
+    std::cout << "Bullet already present" << std::endl;
+    return;
+  }
+
   auto e = m_entityManager.addEntity("bullet");
   auto& p_state = m_player->getComponent<CState>();
   auto& p_transform = entity->getComponent<CTransform>();
   auto& p_bounding_box = entity->getComponent<CBounding_box>();
-  
+
   e->addComponent<CAnimation>(m_game->getAssets().get_animation("BulletHead"), true);
   e->addComponent<CTransform>(Vec2(p_transform.position.x, p_transform.position.y - p_bounding_box.half_size.y - m_gridSize.y), Vec2(0,0), Vec2(1,1), 0);
-  //e->addComponent<CBounding_box>(e->getComponent<CAnimation>().animation.getSize());
+  e->addComponent<CBounding_box>(e->getComponent<CAnimation>().animation.getSize());
+  e->addComponent<CFrameCounter>();
   
 }
 
@@ -401,6 +410,11 @@ void Scene_Play::sLifespan() {
         e->destroy();
       }
     }
+
+    if(e->hasComponent<CFrameCounter>())
+    {
+      e->getComponent<CFrameCounter>().frameCount++;
+    }
   }
 }
 
@@ -495,14 +509,16 @@ void Scene_Play::sCollision() {
 
     if(bullet_collision.x > 0 && bullet_collision.y > 0 && e->tag() == "Tile")
     {
-      if(e->getComponent<CAnimation>().animation.getName() == "Brick")
+      if(e->getComponent<CAnimation>().animation.getName() == "Ground")
       {
         std::cout << "Brick Hit!" << std::endl;
-        e_state.state = "hit";
-        bullet->destroy();
+        //e_state.state = "hit";
+        //bullet->destroy();
+        p_state.firing = false;
+        destroyChainBullet();
       }else
       {
-        bullet->destroy();
+        //bullet->destroy();
       }
       //std::cout << "Tag: " << e->tag() << std::endl;
     }
@@ -609,6 +625,7 @@ void Scene_Play::sDoAction(const Action &action)
     }else if(action.name() == "FIRE")
     {
       std::cout << "Fire!" << std::endl;
+      m_player->getComponent<CState>().firing = true;
       spawnBullet(m_player);
     }
 
@@ -818,9 +835,11 @@ void Scene_Play::update()
 		sMovement();
 		sLifespan();
 		sAnimation();
+    sCreate();
 	}
 
 	sCollision();
+  sClean();
 	sRender();
 }
 
@@ -878,4 +897,74 @@ void Scene_Play::spawnCoin(std::shared_ptr<Entity> tile)
   coin->addComponent<CLifespan>(300, 0);
   coin->addComponent<CTransform>(Vec2(t_transform.position.x, t_transform.position.y - 64));
 
+}
+
+void Scene_Play::sCreate()
+{
+  if(m_player->hasComponent<CState>())
+  {
+    auto& p_state = m_player->getComponent<CState>();
+
+    if(p_state.firing)
+    {
+      std::cout << "Creating" << std::endl;
+      auto bulletHead = m_entityManager.getEntities("bullet")[0];
+      if(bulletHead->hasComponent<CFrameCounter>()) 
+      {
+        auto& b_frame_counter = bulletHead->getComponent<CFrameCounter>();
+        std::cout << "Frame Counter: " << b_frame_counter.frameCount << std::endl;
+        if((b_frame_counter.frameCount % 2) == 0)
+        {
+          spawnChain(bulletHead);
+        }
+      }
+      
+      
+      
+    }
+
+  }
+
+  
+}
+
+void Scene_Play::spawnChain(std::shared_ptr<Entity> bulletHead)
+{
+  auto& p_state = m_player->getComponent<CState>();
+  auto& h_transform = bulletHead->getComponent<CTransform>();
+  auto& h_bounding_box = bulletHead->getComponent<CBounding_box>();
+  //std::cout << "Spawning chain" << std::endl;
+  auto chain_entity = m_entityManager.addEntity("chain");
+  chain_entity->addComponent<CAnimation>(m_game->getAssets().get_animation("Chain"), true);
+  h_transform.position = Vec2(h_transform.position.x, h_transform.position.y - m_gridSize.y);
+  chain_entity->addComponent<CTransform>(Vec2(h_transform.position.x, h_transform.position.y + h_bounding_box.half_size.y + 8));
+  //p_state.firing = false;
+}
+
+void Scene_Play::destroyChainBullet()
+{
+  std::cout << "Destroy" << std::endl;
+  for (auto e : m_entityManager.getEntities("chain"))
+  {
+    e->destroy();
+  }
+
+  for(auto e : m_entityManager.getEntities("bullet"))
+  {
+    e->destroy();
+  }
+}
+
+void Scene_Play::sClean()
+{
+  auto& bullet = m_entityManager.getEntities("bullet");
+  auto& p_state = m_player->getComponent<CState>();
+
+  if(!p_state.firing && bullet.empty())
+  {
+    for(auto e : m_entityManager.getEntities("chain"))
+    {
+      e->destroy();
+    }
+  }
 }

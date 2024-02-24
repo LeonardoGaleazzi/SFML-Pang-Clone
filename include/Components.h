@@ -91,3 +91,10 @@ public:
 	CState() {}
 	CState(const std::string &s, const std::string &d) : state(s), direction(d) {}
 };
+
+class CFrameCounter : public Component
+{
+public:
+	int frameCount = 0;
+	CFrameCounter(){}
+};

@@ -40,15 +40,15 @@ void Animation::update() {
 
     //std::cout << "Rect: [" << animation_frame * m_size.x << "," << 0 << "," << m_size.x << "," << m_size.y << "]" << std::endl;
 
-    m_sprite.setTextureRect(sf::IntRect(animation_frame * m_size.x, 0, m_size.x, m_size.y));
+    if(m_name != "BulletHead")
+    {
+      m_sprite.setTextureRect(sf::IntRect(animation_frame * m_size.x, 0, m_size.x, m_size.y));
+    }
 
     //if(m_name == "Question") std::cout << "After Scale: " << "(" << m_sprite.getScale().x << "," << m_sprite.getScale().y << ")" << std::endl;
 
     
   }
-  
-
-
   
 
   //TODO:

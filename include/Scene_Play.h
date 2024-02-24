@@ -37,12 +37,15 @@ class Scene_Play : public Scene {
   void sDoAction(const Action &);
   void sAnimation();
   void sRender();
+  void sCreate();
+  void sClean();
   
   bool checkBottom();
   void print(std::string , const std::string , const std::string );
   void print(std::string);
   void spawnCoin(std::shared_ptr<Entity>);
-
+  void spawnChain(std::shared_ptr<Entity>);
+  void destroyChainBullet();
   public:
   Scene_Play(GameEngine *, const std::string &);
   void update();
