@@ -41,7 +41,10 @@ class Scene_Play : public Scene {
   void sClean();
   
   bool checkBottom();
-  void print(std::string , const std::string , const std::string );
+
+  template<typename T1, typename T2>
+  void print(const std::string& , const T1& , const T2&) ;
+
   void print(std::string);
   void spawnCoin(std::shared_ptr<Entity>);
   void spawnChain(std::shared_ptr<Entity>);
