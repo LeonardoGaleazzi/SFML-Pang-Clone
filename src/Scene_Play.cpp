@@ -181,6 +181,7 @@ void Scene_Play::loadLevel(const std::string &filename) {
 
           tileEntity->addComponent<CBounding_box>(b_animation.animation.getSize());
           tileEntity->addComponent<CState>("normal", "right");
+          tileEntity->addComponent<CGravity>(0.1);
         }else if (entityTag == "Player")
 		    {
 
@@ -336,6 +337,18 @@ void Scene_Play::sMovement() {
       Vec2 overlap = m_physics.GetOverlap(m_player, e);
       if(overlap != Vec2(0,0)) std::cout << "(" << overlap.x << "," << overlap.y << ")" << std::endl;
     }*/
+
+  }
+
+
+  for(auto e: m_entityManager.getEntities("Ball"))
+  {
+    auto& b_tranfsform = e->getComponent<CTransform>();
+    auto& b_gravity = e->getComponent<CGravity>();
+
+    e->getComponent<CTransform>().velocity.y += b_gravity.gravity;
+    b_tranfsform.position += e->getComponent<CTransform>().velocity;
+
 
   }
 
@@ -508,11 +521,11 @@ void Scene_Play::sCollision() {
         if(top_bottom)
         {
           
-          b_transform.velocity.y *= -1;
+          b_transform.velocity.y = -8.0;
 
         }else if(right_left)
         {
-          b_transform.velocity.x *= -1;
+          b_transform.velocity.x *= -1.0;
         }
         
       }
