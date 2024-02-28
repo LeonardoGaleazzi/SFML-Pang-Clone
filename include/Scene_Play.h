@@ -49,6 +49,7 @@ class Scene_Play : public Scene {
   void spawnCoin(std::shared_ptr<Entity>);
   void spawnChain(std::shared_ptr<Entity>);
   void destroyChainBullet();
+  void splitBall(std::shared_ptr<Entity>);
   public:
   Scene_Play(GameEngine *, const std::string &);
   void update();

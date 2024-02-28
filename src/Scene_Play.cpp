@@ -169,7 +169,7 @@ void Scene_Play::loadLevel(const std::string &filename) {
 
           auto & b_animation = tileEntity->getComponent<CAnimation>();
           print("Ballsize: ", std::to_string(b_animation.animation.getSize().x), std::to_string(b_animation.animation.getSize().y));
-          Vec2 scale(2,2);
+          Vec2 scale(3,3);
 
           b_animation.animation.setScale(scale.x, scale.y);
 
@@ -181,7 +181,7 @@ void Scene_Play::loadLevel(const std::string &filename) {
 
           tileEntity->addComponent<CBounding_box>(b_animation.animation.getSize());
           tileEntity->addComponent<CState>("normal", "right");
-          tileEntity->addComponent<CGravity>(0.1);
+          tileEntity->addComponent<CGravity>(0.03);
         }else if (entityTag == "Player")
 		    {
 
@@ -493,7 +493,7 @@ void Scene_Play::sCollision() {
       int y_cell_number = (m_game->getWindow().getSize().y / m_gridSize.y) - 1;
       int x_cell_number = (m_game->getWindow().getSize().x / m_gridSize.x) - 1;
 
-      print("Cell count", 0, x_cell_number);
+      //print("Cell count", 0, x_cell_number);
 
       int e_cell_y = e_transform.position.y / m_gridSize.y;
       int e_cell_x = e_transform.position.x / m_gridSize.x;
@@ -505,7 +505,7 @@ void Scene_Play::sCollision() {
 
 
       //print("Cell number", 0, e_cell);
-      print("Cell number", 0, e_cell_x);
+      //print("Cell number", 0, e_cell_x);
 
     }
 
@@ -521,7 +521,7 @@ void Scene_Play::sCollision() {
         if(top_bottom)
         {
           
-          b_transform.velocity.y = -8.0;
+          b_transform.velocity.y = -6.0;
 
         }else if(right_left)
         {
@@ -538,6 +538,24 @@ void Scene_Play::sCollision() {
   }
 
   auto& p_transform = m_player->getComponent<CTransform>();
+
+
+  for(auto e : m_entityManager.getEntities("Ball"))
+  {
+    for(auto h : m_entityManager.getEntities("bullet"))
+    {
+      Vec2 previous_collision = m_physics.GetPreviousOverlap(h, e);
+      Vec2 current_collision = m_physics.GetOverlap(h, e);
+
+      if(current_collision.x > 0 && current_collision.y > 0)
+      {
+          splitBall(e);
+          print("Hit!");
+      }
+
+      
+    }
+  }
 
 
 
@@ -907,4 +925,54 @@ void Scene_Play::sClean()
       e->destroy();
     }
   }
+}
+
+void Scene_Play::splitBall(std::shared_ptr<Entity> ball)
+{
+  auto b_transform = ball->getComponent<CTransform>();
+  auto b_bounding_box = ball->getComponent<CBounding_box>();
+
+  ball->destroy();
+
+  
+  Vec2 b1_position(b_transform.position.x + b_bounding_box.half_size.x, b_transform.position.y);
+
+  Vec2 b2_position(b_transform.position.x - b_bounding_box.half_size.x, b_transform.position.y);
+
+  auto ball_1 = m_entityManager.addEntity("Ball");
+
+  auto ball_2 = m_entityManager.addEntity("Ball");
+
+  Vec2 scale(2,2);
+
+  Vec2 b1_velocity(b_transform.velocity.x, b_transform.velocity.y);
+  Vec2 b2_velocity(b_transform.velocity.x *(-1), b_transform.velocity.y);
+
+
+
+  ball_1->addComponent<CAnimation>(m_game->getAssets().get_animation("Ball"), true);
+  ball_1->addComponent<CTransform>(b1_position, b1_velocity, scale, 0);
+
+  ball_2->addComponent<CAnimation>(m_game->getAssets().get_animation("Ball"), true);
+  ball_2->addComponent<CTransform>(b2_position, b2_velocity, scale, 0);
+
+  auto b1_animation = ball_1->getComponent<CAnimation>();
+  auto b2_animation = ball_2->getComponent<CAnimation>();
+
+
+
+  b1_animation.animation.setScale(scale.x, scale.y);
+  b2_animation.animation.setScale(scale.x, scale.y);
+
+  ball_1->addComponent<CBounding_box>(b1_animation.animation.getSize());
+  ball_2->addComponent<CBounding_box>(b2_animation.animation.getSize());
+
+
+  ball_1->addComponent<CGravity>(0.03);
+  ball_2->addComponent<CGravity>(0.03);
+
+
+
+
+
 }
