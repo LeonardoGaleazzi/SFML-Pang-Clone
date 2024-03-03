@@ -547,7 +547,15 @@ void Scene_Play::sCollision() {
   for(auto e : m_entityManager.getEntities("Ball"))
   {
     auto& b_state = e->getComponent<CState>();
-    for(auto h : m_entityManager.getEntities("bullet"))
+    
+    EntityVec chainBulletEntities;
+    auto& bulletVec = m_entityManager.getEntities("bullet");
+    auto& chainVec = m_entityManager.getEntities("chain");
+    chainBulletEntities.reserve( bulletVec.size() + chainVec.size() ); // preallocate memory
+    chainBulletEntities.insert( chainBulletEntities.end(), bulletVec.begin(), bulletVec.end() );
+    chainBulletEntities.insert( chainBulletEntities.end(), chainVec.begin(), chainVec.end() );  
+  
+    for(auto h : chainBulletEntities)
     {
       Vec2 previous_collision = m_physics.GetPreviousOverlap(h, e);
       Vec2 current_collision = m_physics.GetOverlap(h, e);
@@ -810,7 +818,7 @@ void Scene_Play::update()
 	}
 
 	sCollision();
-  //sClean();
+  sClean();
 	sRender();
 }
 
@@ -947,6 +955,9 @@ void Scene_Play::splitBall(std::shared_ptr<Entity> ball)
   auto b_bounding_box = ball->getComponent<CBounding_box>();
 
   ball->destroy();
+  
+  if(b_transform.scale > (1,1))
+  {
 
   
   Vec2 b1_position(b_transform.position.x + b_bounding_box.half_size.x, b_transform.position.y);
@@ -957,7 +968,7 @@ void Scene_Play::splitBall(std::shared_ptr<Entity> ball)
 
   auto ball_2 = m_entityManager.addEntity("Ball");
 
-  Vec2 scale(2,2);
+  Vec2 scale(b_transform.scale.x -1 ,b_transform.scale.x -1);
 
   Vec2 b1_velocity(b_transform.velocity.x, b_transform.velocity.y);
   Vec2 b2_velocity(b_transform.velocity.x *(-1), b_transform.velocity.y);
@@ -984,6 +995,8 @@ void Scene_Play::splitBall(std::shared_ptr<Entity> ball)
 
   ball_1->addComponent<CGravity>(0.03);
   ball_2->addComponent<CGravity>(0.03);
+
+  }
 
 
 }
