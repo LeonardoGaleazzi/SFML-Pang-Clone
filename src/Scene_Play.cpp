@@ -202,6 +202,7 @@ void Scene_Play::loadLevel(const std::string &filename) {
 void Scene_Play::spawnPlayer() {
   // here is a sample player entity which you can use to construct other
   // entities
+  print("spawnPlayer");
 
   m_player = m_entityManager.addEntity("player");
   m_player->addComponent<CAnimation>(m_game->getAssets().get_animation("Stand"), true);
@@ -231,6 +232,7 @@ void Scene_Play::spawnBullet(const std::shared_ptr<Entity> entity) {
                                                    
   // TODO: this should spawn a bullet at the given entity, going in the
   // direction the entity is facing
+  print("spawnBullet");
   auto& bullet = m_entityManager.getEntities("bullet");
 
   if(!bullet.empty())
@@ -252,6 +254,7 @@ void Scene_Play::spawnBullet(const std::shared_ptr<Entity> entity) {
 }
 
 void Scene_Play::spawnEnemy() {
+  print("spawnEnemy");
   auto ball = m_entityManager.addEntity("ball");
   ball->addComponent<CAnimation>(m_game->getAssets().get_animation("Ball"), true);
   ball->addComponent<CTransform>(gridToMidPixel(1,1,ball));
@@ -263,7 +266,7 @@ void Scene_Play::sMovement() {
   // TODO: implement the maximum player speed in both X and Y directions
   // NOTE: setting an  entity's scale.x to -1/1 will make it face to the
   // left/right
-
+  print("sMovement");
   auto& p_transform = m_player->getComponent<CTransform>();
 
   auto& p_state = m_player->getComponent<CState>();
@@ -360,7 +363,7 @@ void Scene_Play::sMovement() {
 void Scene_Play::sLifespan() {
   // TODO: check lifespan of entities that have them, and destroy them if they
   // go over
-
+  print("sLifespan");
   for(auto e : m_entityManager.getEntities())
   {
     if(e->hasComponent<CLifespan>())
@@ -382,7 +385,8 @@ void Scene_Play::sLifespan() {
 }
 
 void Scene_Play::sCollision() {
-   auto& print_transform = m_player->getComponent<CTransform>();
+  print("sCollision");
+  auto& print_transform = m_player->getComponent<CTransform>();
     
   auto& p_state = m_player->getComponent<CState>();
 
@@ -517,7 +521,7 @@ void Scene_Play::sCollision() {
         
       if(ball_overlap.x > 0 && ball_overlap.y > 0)
       {
-        std::cout << "Overlap" << std::endl;
+        //std::cout << "Overlap" << std::endl;
         if(top_bottom)
         {
           
@@ -542,6 +546,7 @@ void Scene_Play::sCollision() {
 
   for(auto e : m_entityManager.getEntities("Ball"))
   {
+    auto& b_state = e->getComponent<CState>();
     for(auto h : m_entityManager.getEntities("bullet"))
     {
       Vec2 previous_collision = m_physics.GetPreviousOverlap(h, e);
@@ -551,6 +556,8 @@ void Scene_Play::sCollision() {
       {
           splitBall(e);
           print("Hit!");
+          p_state.firing = false;
+          destroyChainBullet();
       }
 
       
@@ -572,7 +579,7 @@ void Scene_Play::sCollision() {
 
 void Scene_Play::sDoAction(const Action &action) 
 {
-
+    print("sDoAction");
     if (action.type() == "START") {
     
     if(action.name() == "TOGGLE_TEXTURE") { m_drawTextures = !m_drawTextures; }
@@ -623,7 +630,7 @@ void Scene_Play::sDoAction(const Action &action)
       
     }else if(action.name() == "FIRE")
     {
-      std::cout << "Fire!" << std::endl;
+      //std::cout << "Fire!" << std::endl;
       m_player->getComponent<CState>().firing = true;
       spawnBullet(m_player);
     }
@@ -635,7 +642,7 @@ void Scene_Play::sDoAction(const Action &action)
 
 void Scene_Play::sAnimation() {
   
-
+  print("sAnimation");
   for(auto e : m_entityManager.getEntities())
   {
     if(e->hasComponent<CAnimation>())
@@ -707,12 +714,12 @@ void Scene_Play::sAnimation() {
 }
 
 void Scene_Play::onEnd() {
-  
+  print("onEnd");
 }
 
 void Scene_Play::sRender()
 {
-  
+  print("sRender");
 	if (!m_paused) { m_game->window().clear(sf::Color(255, 100, 255)); }
 	else		   { m_game->window().clear(sf::Color(50, 50, 150)); }
 
@@ -790,7 +797,7 @@ void Scene_Play::sRender()
 
 void Scene_Play::update()
 {
-
+  print("update");
 	m_currentFrame++;
 	m_entityManager.update();
 
@@ -803,12 +810,13 @@ void Scene_Play::update()
 	}
 
 	sCollision();
-  sClean();
+  //sClean();
 	sRender();
 }
 
 bool Scene_Play::checkBottom()
 {
+  print("checkBottom");
   bool is_there_a_bottom = false;
   for(auto e : m_entityManager.getEntities("Tile"))
   {
@@ -850,6 +858,7 @@ void Scene_Play::print(std::string body)
 
 void Scene_Play::spawnCoin(std::shared_ptr<Entity> tile)
 {
+  print("spawnCoin");
   auto& t_transform = tile->getComponent<CTransform>();
   auto coin = m_entityManager.addEntity("Coin");
   coin->addComponent<CAnimation>(m_game->getAssets().get_animation("Coin"), true);
@@ -860,18 +869,19 @@ void Scene_Play::spawnCoin(std::shared_ptr<Entity> tile)
 
 void Scene_Play::sCreate()
 {
+  print("sCreate");
   if(m_player->hasComponent<CState>())
   {
     auto& p_state = m_player->getComponent<CState>();
 
     if(p_state.firing)
     {
-      std::cout << "Creating" << std::endl;
+      //std::cout << "Creating" << std::endl;
       auto bulletHead = m_entityManager.getEntities("bullet")[0];
-      if(bulletHead->hasComponent<CFrameCounter>()) 
+      if(bulletHead->hasComponent<CFrameCounter>() && bulletHead->isActive()) 
       {
         auto& b_frame_counter = bulletHead->getComponent<CFrameCounter>();
-        std::cout << "Frame Counter: " << b_frame_counter.frameCount << std::endl;
+        //std::cout << "Frame Counter: " << b_frame_counter.frameCount << std::endl;
         if((b_frame_counter.frameCount % 2) == 0)
         {
           spawnChain(bulletHead);
@@ -889,6 +899,7 @@ void Scene_Play::sCreate()
 
 void Scene_Play::spawnChain(std::shared_ptr<Entity> bulletHead)
 {
+  print("spawnChain");
   auto& p_state = m_player->getComponent<CState>();
   auto& h_transform = bulletHead->getComponent<CTransform>();
   auto& h_bounding_box = bulletHead->getComponent<CBounding_box>();
@@ -901,6 +912,7 @@ void Scene_Play::spawnChain(std::shared_ptr<Entity> bulletHead)
 
 void Scene_Play::destroyChainBullet()
 {
+  print("destroyChainBullet");
   std::cout << "Destroy" << std::endl;
   for (auto e : m_entityManager.getEntities("chain"))
   {
@@ -915,6 +927,7 @@ void Scene_Play::destroyChainBullet()
 
 void Scene_Play::sClean()
 {
+  print("sClean");
   auto& bullet = m_entityManager.getEntities("bullet");
   auto& p_state = m_player->getComponent<CState>();
 
@@ -929,6 +942,7 @@ void Scene_Play::sClean()
 
 void Scene_Play::splitBall(std::shared_ptr<Entity> ball)
 {
+  print("splitBall");
   auto b_transform = ball->getComponent<CTransform>();
   auto b_bounding_box = ball->getComponent<CBounding_box>();
 
@@ -970,9 +984,6 @@ void Scene_Play::splitBall(std::shared_ptr<Entity> ball)
 
   ball_1->addComponent<CGravity>(0.03);
   ball_2->addComponent<CGravity>(0.03);
-
-
-
 
 
 }
